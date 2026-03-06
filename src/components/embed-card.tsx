@@ -3,23 +3,51 @@
 import { useMemo, useState } from "react";
 
 type EmbedCardProps = {
-  title: string;
-  trackUrl: string;
+  title?: string;
+  trackUrl?: string;
+  url?: string;
 };
 
-export function EmbedCard({ title, trackUrl }: EmbedCardProps) {
+const FALLBACK_TITLE = "soundcloud embed";
+
+function deriveTitleFromUrl(url: string) {
+  const cleaned = url.trim().replace(/\/$/, "");
+  const segments = cleaned.split("/").filter(Boolean);
+  const slug = segments[segments.length - 1] ?? "track";
+  return slug.replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim() || "track";
+}
+
+export function EmbedCard({ title, trackUrl, url }: EmbedCardProps) {
   const [loaded, setLoaded] = useState(false);
   const [errored, setErrored] = useState(false);
 
+  const sourceUrl = trackUrl ?? url ?? "";
+
+  const iframeTitle = useMemo(() => {
+    if (title) {
+      return title;
+    }
+
+    if (!sourceUrl) {
+      return FALLBACK_TITLE;
+    }
+
+    return `soundcloud: ${deriveTitleFromUrl(sourceUrl)}`;
+  }, [sourceUrl, title]);
+
   const src = useMemo(() => {
-    const encoded = encodeURIComponent(trackUrl);
+    if (!sourceUrl) {
+      return "";
+    }
+
+    const encoded = encodeURIComponent(sourceUrl);
     return `https://w.soundcloud.com/player/?url=${encoded}`;
-  }, [trackUrl]);
+  }, [sourceUrl]);
 
   return (
     <article className="module-card relative overflow-hidden">
       <header className="mb-4 flex items-center justify-between gap-3">
-        <h3 className="text-sm text-[color:var(--ink)]">{title}</h3>
+        {title ? <h3 className="text-sm text-[color:var(--ink)]">{title}</h3> : <div />}
         <span className="text-xs tracking-[0.16em] text-[color:var(--muted)]">soundcloud</span>
       </header>
       <div className="relative">
@@ -32,17 +60,17 @@ export function EmbedCard({ title, trackUrl }: EmbedCardProps) {
           <div className="rounded-lg border border-[color:var(--line)] bg-[color:var(--bg-soft)] px-4 py-10 text-sm text-[color:var(--muted)]">
             unable to load audio embed. open track directly:
             <a
-              href={trackUrl}
+              href={sourceUrl}
               target="_blank"
               rel="noreferrer"
               className="mt-2 block text-[color:var(--violet)] underline decoration-dotted underline-offset-4"
             >
-              {trackUrl}
+              {sourceUrl}
             </a>
           </div>
         ) : (
           <iframe
-            title={title}
+            title={iframeTitle}
             src={src}
             allow="autoplay"
             loading="lazy"

@@ -68,16 +68,28 @@ export function Modules({ onProjectHover, reducedMotion }: ModulesProps) {
         </div>
       </motion.article>
 
-      <motion.div
+      <motion.article
         variants={reveal}
         initial={reducedMotion ? false : "hidden"}
         whileInView={reducedMotion ? undefined : "show"}
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.64, ease: "easeOut", delay: 0.1 }}
-        whileHover={reducedMotion ? undefined : { x: 4, y: -3 }}
+        className="module-card"
       >
-        <EmbedCard title={content.music.title} trackUrl={content.music.trackUrl} />
-      </motion.div>
+        <p className="module-label">music</p>
+        <div className="ascii-divider">+---- signal archive ----+</div>
+        <div className="mt-4 grid grid-cols-1 gap-3 xl:grid-cols-2">
+          {content.music.map((track, index) => (
+            <motion.div
+              key={track.url}
+              whileHover={reducedMotion ? undefined : { x: index % 2 === 0 ? 5 : -5, y: -2 }}
+              transition={{ type: "spring", stiffness: 200, damping: 22 }}
+            >
+              <EmbedCard url={track.url} />
+            </motion.div>
+          ))}
+        </div>
+      </motion.article>
 
       <motion.article
         variants={reveal}
