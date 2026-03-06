@@ -8,6 +8,7 @@ import { usePrefersReducedMotion } from "./use-prefers-reduced-motion";
 const IDLE_SIGNAL = "signal: awaiting transmission";
 const SIGNALS: Record<string, string> = {
   "PermChain OAuth": "signal: viewing permchain oauth",
+  "Living Library": "signal: viewing living library",
 };
 
 const GLYPHS = "<>/\\[]{}=+*#@!?~";
