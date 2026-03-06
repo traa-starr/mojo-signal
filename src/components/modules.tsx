@@ -30,7 +30,7 @@ export function Modules({ onSignalHover, reducedMotion }: ModulesProps) {
         whileInView={reducedMotion ? undefined : "show"}
         viewport={{ once: true, amount: 0.35 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="module-card"
+        id="section-about" data-signal-key="module:about" className="module-card"
         whileHover={reducedMotion ? undefined : { x: 6, y: -3 }}
         onHoverStart={() => onSignalHover("module:about")}
         onHoverEnd={() => onSignalHover(null)}
@@ -46,7 +46,7 @@ export function Modules({ onSignalHover, reducedMotion }: ModulesProps) {
         whileInView={reducedMotion ? undefined : "show"}
         viewport={{ once: true, amount: 0.35 }}
         transition={{ duration: 0.62, ease: "easeOut", delay: 0.05 }}
-        className="module-card"
+        id="section-projects" data-signal-key="module:projects" className="module-card"
       >
         <p className="module-label">projects</p>
         <div className="ascii-divider">+---- active transmissions ----+</div>
@@ -82,7 +82,7 @@ export function Modules({ onSignalHover, reducedMotion }: ModulesProps) {
         whileInView={reducedMotion ? undefined : "show"}
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.64, ease: "easeOut", delay: 0.1 }}
-        className="module-card"
+        id="section-music" data-signal-key="module:music" className="module-card"
         onHoverStart={() => onSignalHover("module:music")}
         onHoverEnd={() => onSignalHover(null)}
       >
@@ -112,21 +112,21 @@ export function Modules({ onSignalHover, reducedMotion }: ModulesProps) {
         whileInView={reducedMotion ? undefined : "show"}
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.66, ease: "easeOut", delay: 0.14 }}
-        className="module-card"
-        onHoverStart={() => onSignalHover("module:links")}
+        id="section-links" data-signal-key="module:links" className="module-card"
+        onHoverStart={() => onSignalHover("module:socials")}
         onHoverEnd={() => onSignalHover(null)}
       >
-        <p className="module-label">links</p>
+        <p className="module-label">socials</p>
         <div className="ascii-divider">+---- external vectors ----+</div>
         <div className="mt-3 flex flex-wrap gap-3">
-          {content.links.map((link) => (
+          {content.socials.map((link) => (
             <motion.div
               key={link.label}
               whileHover={reducedMotion ? undefined : { scale: 1.06, y: -2, boxShadow: "0 8px 22px rgba(123, 77, 255, 0.14)" }}
               transition={{ type: "spring", stiffness: 300, damping: 22 }}
               className="rounded-full"
               onHoverStart={() => onSignalHover(`link:${link.label}`)}
-              onHoverEnd={() => onSignalHover("module:links")}
+              onHoverEnd={() => onSignalHover("module:socials")}
             >
               <Link
                 href={link.url}
@@ -147,7 +147,7 @@ export function Modules({ onSignalHover, reducedMotion }: ModulesProps) {
         whileInView={reducedMotion ? undefined : "show"}
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.68, ease: "easeOut", delay: 0.16 }}
-        className="module-card"
+        id="section-donate" data-signal-key="donate" className="module-card"
       >
         <p className="module-label">donate</p>
         <div className="ascii-divider">+---- support channel ----+</div>

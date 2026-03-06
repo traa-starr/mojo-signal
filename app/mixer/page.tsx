@@ -2,12 +2,20 @@ import Link from "next/link";
 
 export default function MixerPage() {
   return (
-    <main className="mx-auto max-w-4xl p-10">
-      <h1 className="text-3xl">/mixer</h1>
-      <p className="mt-4">vst gadget route. prototype links + chain-aware plugin utility shelf.</p>
-      <Link href="https://github.com/traa-starr" className="mt-5 inline-block underline" target="_blank" rel="noreferrer">
-        open external vst resources
-      </Link>
+    <main className="home-shell">
+      <section className="soft-card">
+        <p className="ascii-line">+== /mixer ==+</p>
+        <h1>vst gadget lab</h1>
+        <p>placeholder: a utility shelf for chain-aware plugin recipes and sonic gadget references.</p>
+        <div className="route-list">
+          <Link href="https://github.com/traa-starr" target="_blank" rel="noreferrer" className="pill-button">
+            open external vst resources
+          </Link>
+          <Link href="/" className="pill-button">
+            back home
+          </Link>
+        </div>
+      </section>
     </main>
   );
 }
