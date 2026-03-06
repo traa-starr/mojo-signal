@@ -7,17 +7,28 @@ import { Hemisphere, Moon } from "lunarphase-js";
 import { createPublicClient, createWalletClient, custom, http, parseAbi } from "viem";
 import { baseSepolia } from "viem/chains";
 import { content } from "@/src/lib/content";
+import { usePrefersReducedMotion } from "./use-prefers-reduced-motion";
+import { useSignalField } from "./use-signal-field";
+import { useActiveSection } from "./use-active-section";
+import { SignalField } from "./signal-field";
 
-type GrokPayload = {
-  visual: string;
-  summary: string;
-};
+type GrokPayload = { visual: string; summary: string };
+type SignalMode = "idle" | "music" | "project";
 
-type MusicModalProps = {
-  open: boolean;
-  onClose: () => void;
-  title: string;
-  url: string;
+const IDLE_SIGNALS = [
+  "signal: awaiting transmission",
+  "signal: desktop field in sync",
+  "signal: milk & honey online",
+  "signal: peach neon calm",
+] as const;
+
+const SIGNAL_BY_KEY: Record<string, string> = {
+  "module:about": "signal: decoding artist statement",
+  "module:current": "signal: lunar state in motion",
+  "module:projects": "signal: project links armed",
+  "module:music": "signal: playback portal open",
+  "module:links": "signal: outbound socials live",
+  donate: "signal: buy me a coffee gateway",
 };
 
 const phaseVisuals: Record<string, string> = {
@@ -33,17 +44,26 @@ const phaseVisuals: Record<string, string> = {
 
 const permAbi = parseAbi(["function mint(address to, string calldata memo) external returns (uint256)"]);
 
+type EthereumProvider = {
+  request: (args: { method: string; params?: unknown[] | object }) => Promise<unknown>;
+};
+
 function rhythmHeader() {
   return Array.from({ length: 4 })
     .map(() => content.repeatedHeader)
     .join("   ");
 }
 
+function signalModeFromKey(key: string | null): SignalMode {
+  if (!key) return "idle";
+  if (key.includes("music")) return "music";
+  if (key.includes("project")) return "project";
+  return "idle";
+}
+
 function ThemeToggle() {
   const [dark, setDark] = useState(() => {
-    if (typeof window === "undefined") {
-      return false;
-    }
+    if (typeof window === "undefined") return false;
     const stored = localStorage.getItem("mojo-theme");
     return stored ? stored === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
@@ -60,18 +80,19 @@ function ThemeToggle() {
   };
 
   return (
-    <button className="pill-button" onClick={toggleTheme} type="button">
-      {dark ? "switch to light" : "switch to dark"}
-    </button>
+    <div className="theme-widget">
+      <p>theme</p>
+      <button className="pill-button" onClick={toggleTheme} type="button">
+        {dark ? "switch to light" : "switch to dark"}
+      </button>
+    </div>
   );
 }
 
 function VibeLog() {
   const [editing, setEditing] = useState(false);
   const [text, setText] = useState(() => {
-    if (typeof window === "undefined") {
-      return "double click + write the current vibe...";
-    }
+    if (typeof window === "undefined") return "double click + write the current vibe...";
     return localStorage.getItem("mojo-vibe-log") ?? "double click + write the current vibe...";
   });
 
@@ -81,15 +102,7 @@ function VibeLog() {
   };
 
   if (editing) {
-    return (
-      <textarea
-        className="vibe-editor"
-        value={text}
-        onChange={(event) => setText(event.target.value)}
-        onBlur={save}
-        autoFocus
-      />
-    );
+    return <textarea className="vibe-editor" value={text} onChange={(event) => setText(event.target.value)} onBlur={save} autoFocus />;
   }
 
   return (
@@ -99,48 +112,18 @@ function VibeLog() {
   );
 }
 
-function MusicModal({ open, onClose, title, url }: MusicModalProps) {
-  const src = `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}`;
-
-  return (
-    <AnimatePresence>
-      {open ? (
-        <motion.div className="modal-scrim" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-          <motion.div
-            className="modal-shell"
-            initial={{ y: 24, opacity: 0, scale: 0.96 }}
-            animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: 20, opacity: 0, scale: 0.96 }}
-          >
-            <div className="flex items-center justify-between gap-3">
-              <h3>{title}</h3>
-              <button onClick={onClose} className="pill-button" type="button">
-                close
-              </button>
-            </div>
-            <iframe title={title} src={src} allow="autoplay" loading="lazy" className="mt-4 h-[180px] w-full rounded-xl border" />
-          </motion.div>
-        </motion.div>
-      ) : null}
-    </AnimatePresence>
-  );
-}
-
 function GrantPermButton() {
   const [state, setState] = useState("grant perm");
 
   const mintAccess = async () => {
-    const eth = (window as Window & { ethereum?: { request: (...args: unknown[]) => Promise<unknown> } }).ethereum;
+    const eth = (window as Window & { ethereum?: EthereumProvider }).ethereum;
     if (!eth) {
       setState("wallet missing");
       return;
     }
 
     try {
-      const walletClient = createWalletClient({
-        chain: baseSepolia,
-        transport: custom(eth as any),
-      });
+      const walletClient = createWalletClient({ chain: baseSepolia, transport: custom(eth) });
       const [account] = await walletClient.requestAddresses();
       const contractAddress = process.env.NEXT_PUBLIC_PERMCHAINOAUTH_CONTRACT as `0x${string}` | undefined;
       if (!contractAddress) {
@@ -173,25 +156,70 @@ function GrantPermButton() {
 }
 
 export function HomePage() {
+  const reducedMotion = usePrefersReducedMotion();
   const [loading, setLoading] = useState(true);
-  const [openTrack, setOpenTrack] = useState<{ title: string; url: string } | null>(null);
   const [grok, setGrok] = useState<GrokPayload | null>(null);
+  const [hoveredKey, setHoveredKey] = useState<string | null>(null);
+  const [idleIndex, setIdleIndex] = useState(0);
+  const [signalText, setSignalText] = useState<string>(IDLE_SIGNALS[0]);
+  const [activeTrack, setActiveTrack] = useState<{ title: string; url: string } | null>(null);
+
+  const sectionKeys = useMemo(
+    () => ["module:about", "module:current", "module:projects", "module:music", "module:links", "donate"],
+    [],
+  );
+  const activeKey = useActiveSection(sectionKeys);
+  const effectiveKey = hoveredKey ?? activeKey;
+  const signalMode = signalModeFromKey(effectiveKey);
+  useSignalField(reducedMotion, signalMode);
 
   const moon = useMemo(() => {
     const date = new Date();
     const phase = Moon.lunarPhase(date);
     const emoji = Moon.lunarPhaseEmoji(date, { hemisphere: Hemisphere.NORTHERN });
-    return {
-      phase,
-      emoji,
-      ascii: phaseVisuals[phase] ?? "( ? )",
-    };
+    return { phase, emoji, ascii: phaseVisuals[phase] ?? "( ? )" };
   }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 1100);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (effectiveKey) {
+      return;
+    }
+    const timer = setInterval(() => setIdleIndex((current) => (current + 1) % IDLE_SIGNALS.length), 3400);
+    return () => clearInterval(timer);
+  }, [effectiveKey]);
+
+  const targetSignalText = effectiveKey ? (SIGNAL_BY_KEY[effectiveKey] ?? IDLE_SIGNALS[idleIndex]) : IDLE_SIGNALS[idleIndex];
+
+  useEffect(() => {
+    if (reducedMotion || !effectiveKey) {
+      return;
+    }
+
+    let tick = 0;
+    const max = 8;
+    const glyphs = "<>/\\[]{}=+*#";
+    const timer = setInterval(() => {
+      tick += 1;
+      const ratio = tick / max;
+      const reveal = Math.floor(targetSignalText.length * ratio);
+      const next = targetSignalText
+        .split("")
+        .map((char, index) => {
+          if (char === " ") return " ";
+          if (index < reveal) return targetSignalText[index];
+          return glyphs[(index + tick) % glyphs.length];
+        })
+        .join("");
+      setSignalText(tick >= max ? targetSignalText : next);
+    }, 30);
+
+    return () => clearInterval(timer);
+  }, [effectiveKey, reducedMotion, targetSignalText]);
 
   useEffect(() => {
     const fetchGrok = async () => {
@@ -201,13 +229,10 @@ export function HomePage() {
           headers: { "content-type": "application/json" },
           body: JSON.stringify({ phase: moon.phase }),
         });
-        if (!response.ok) {
-          return;
-        }
-        const data = (await response.json()) as GrokPayload;
-        setGrok(data);
+        if (!response.ok) return;
+        setGrok((await response.json()) as GrokPayload);
       } catch {
-        // no-op fallback
+        // fallback text handled in view
       }
     };
 
@@ -215,7 +240,10 @@ export function HomePage() {
   }, [moon.phase]);
 
   return (
-    <>
+    <div className="page-frame" data-signal-mode={signalMode}>
+      <SignalField mode={signalMode} />
+      <ThemeToggle />
+
       <AnimatePresence>
         {loading ? (
           <motion.div className="loading-screen" initial={{ opacity: 1 }} exit={{ opacity: 0 }}>
@@ -225,22 +253,19 @@ export function HomePage() {
         ) : null}
       </AnimatePresence>
 
+      <aside className="signal-dock" aria-live="polite">
+        <p className="hero-topline">+== current signal ==+</p>
+        <p className="mono">{reducedMotion || !effectiveKey ? targetSignalText : signalText}</p>
+      </aside>
+
       <div className="home-shell">
         <header className="hero-panel">
           <div className="hero-topline">~~ &#123; ascii curls &#125; ~~</div>
-          <h1 className="hero-glitch" data-text={content.repeatedHeader}>
-            {rhythmHeader()}
-          </h1>
+          <h1 className="hero-glitch" data-text={content.repeatedHeader}>{rhythmHeader()}</h1>
           <p className="hero-tag">{content.tagline}</p>
-          <div className="hero-actions">
-            <ThemeToggle />
-            <Link href={content.donate.url} className="pill-button" target="_blank" rel="noreferrer">
-              {content.donate.label}
-            </Link>
-          </div>
         </header>
 
-        <section className="grid-panel reveal-on-scroll">
+        <section id="section-about" data-signal-key="module:about" className="grid-panel reveal-on-scroll" onMouseEnter={() => setHoveredKey("module:about")} onMouseLeave={() => setHoveredKey(null)}>
           <article className="soft-card center-copy">
             <p className="ascii-line">+== about ==+</p>
             <p>{content.about.definition}</p>
@@ -248,7 +273,7 @@ export function HomePage() {
             <p>{content.about.who}</p>
           </article>
 
-          <article className="soft-card">
+          <article id="section-current" data-signal-key="module:current" className="soft-card" onMouseEnter={() => setHoveredKey("module:current")} onMouseLeave={() => setHoveredKey(null)}>
             <p className="ascii-line">+== current signal ==+</p>
             <p className="mono">moon phase: {moon.phase}</p>
             <p className="mono">{moon.emoji} {moon.ascii}</p>
@@ -258,63 +283,72 @@ export function HomePage() {
           </article>
         </section>
 
-        <section className="soft-card reveal-on-scroll">
+        <section id="section-projects" data-signal-key="module:projects" className="soft-card reveal-on-scroll" onMouseEnter={() => setHoveredKey("module:projects")} onMouseLeave={() => setHoveredKey(null)}>
           <p className="ascii-line">+== projects ==+</p>
           <ul className="project-list">
             {content.projects.map((project) => (
-              <li key={project.name}>
-                <Link href={project.url} target="_blank" rel="noreferrer" className="glitch-link" data-text={project.name}>
-                  {project.name}
-                </Link>
+              <li key={project.name} onMouseEnter={() => setHoveredKey("module:projects")}>
+                <Link href={project.url} target="_blank" rel="noreferrer" className="glitch-link" data-text={project.name}>{project.name}</Link>
                 <span>{project.note}</span>
               </li>
             ))}
           </ul>
         </section>
 
-        <section className="soft-card reveal-on-scroll">
+        <section id="section-music" data-signal-key="module:music" className="soft-card reveal-on-scroll" onMouseEnter={() => setHoveredKey("module:music")} onMouseLeave={() => setHoveredKey(null)}>
           <p className="ascii-line">+== music portal ==+</p>
           <div className="music-grid">
             {content.music.map((track) => (
-              <button key={track.url} type="button" className="music-pill" onClick={() => setOpenTrack(track)}>
-                open: {track.title}
+              <button key={track.url} type="button" className="music-pill" onClick={() => setActiveTrack(track)}>
+                play: {track.title}
               </button>
             ))}
           </div>
         </section>
 
-        <section className="soft-card reveal-on-scroll">
+        <section id="section-links" data-signal-key="module:links" className="soft-card reveal-on-scroll" onMouseEnter={() => setHoveredKey("module:links")} onMouseLeave={() => setHoveredKey(null)}>
           <p className="ascii-line">+== socials ==+</p>
           <ul className="social-list">
             {content.socials.map((social) => (
-              <li key={social.label}>
-                <Link href={social.url} target="_blank" rel="noreferrer">
-                  {social.label}
-                </Link>
-              </li>
+              <li key={social.label}><Link href={social.url} target="_blank" rel="noreferrer">{social.label}</Link></li>
             ))}
           </ul>
-          <GrantPermButton />
+        </section>
+
+        <section id="section-donate" data-signal-key="donate" className="soft-card reveal-on-scroll donate-card" onMouseEnter={() => setHoveredKey("donate")} onMouseLeave={() => setHoveredKey(null)}>
+          <p className="ascii-line">+== buy me a coffee ==+</p>
+          <p className="mono">support future modules + late night signal experiments.</p>
+          <div className="route-list">
+            <Link href={content.donate.url} className="pill-button" target="_blank" rel="noreferrer">{content.donate.label}</Link>
+            <GrantPermButton />
+          </div>
         </section>
 
         <section className="soft-card reveal-on-scroll">
           <p className="ascii-line">+== future routes ==+</p>
           <div className="route-list">
-            {content.futureRoutes.map((route) => (
-              <Link key={route} href={route} className="pill-button">
-                {route}
-              </Link>
-            ))}
+            {content.futureRoutes.map((route) => <Link key={route} href={route} className="pill-button">{route}</Link>)}
           </div>
         </section>
       </div>
 
-      <MusicModal
-        open={Boolean(openTrack)}
-        onClose={() => setOpenTrack(null)}
-        title={openTrack?.title ?? "soundcloud"}
-        url={openTrack?.url ?? ""}
-      />
-    </>
+      <AnimatePresence>
+        {activeTrack ? (
+          <motion.div className="player-dock" initial={{ y: 120, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 120, opacity: 0 }}>
+            <div className="player-header">
+              <p>now playing: {activeTrack.title}</p>
+              <button className="pill-button" type="button" onClick={() => setActiveTrack(null)}>close</button>
+            </div>
+            <iframe
+              title={activeTrack.title}
+              src={`https://w.soundcloud.com/player/?url=${encodeURIComponent(activeTrack.url)}`}
+              allow="autoplay"
+              loading="lazy"
+              className="player-frame"
+            />
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+    </div>
   );
 }
