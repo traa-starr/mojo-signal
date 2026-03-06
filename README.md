@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# mojo signal
 
-## Getting Started
+transcendent next.js artist site with pastel/glitch duality, moon-phase intelligence, editable vibe logging, soundcloud modal previews, and future-lab routes.
 
-First, run the development server:
+## stack
+
+- next.js app router + typescript
+- framer-motion for playful fancy motion
+- lunarphase-js for live moon state
+- viem utility usage for on-chain tx value formatting
+
+## local dev
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+open `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## env for generative ai + wallet flow
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+create `.env.local`:
 
-## Learn More
+```bash
+NEXT_PUBLIC_GROK_API_KEY=your_grok_key_here
+```
 
-To learn more about Next.js, take a look at the following resources:
+- if `NEXT_PUBLIC_GROK_API_KEY` is present, the homepage requests Grok summaries/visual microcopy from xAI.
+- if not present, local fallback text keeps UI fast and resilient.
+- `grant perm` uses injected wallet (`window.ethereum`) and sends a minimal tx placeholder to the configured contract address in `src/lib/content.ts`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## deploy to vercel
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. push your branch to github.
+2. in vercel, click **add new → project**.
+3. import `traa-starr/mojo-signal`.
+4. framework preset should auto-detect **next.js**.
+5. in project settings → environment variables, set:
+   - `NEXT_PUBLIC_GROK_API_KEY` (optional but recommended for live ai copy).
+6. click **deploy**.
+7. (optional) attach custom domain and enable analytics.
 
-## Deploy on Vercel
+## routes
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `/` home signal experience
+- `/vault` rosin/flower tracker placeholder
+- `/oracle` bpm/key finder placeholder
+- `/mixer` vst gadget link zone
+- `/garden` idea generator placeholder
