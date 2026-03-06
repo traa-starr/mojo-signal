@@ -1,20 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #fffaf6;
-  --bg-soft: #fff3ea;
-  --peach: #ff996f;
-  --violet: #7b4dff;
-  --ink: #111015;
-  --muted: #6d6672;
-  --line: color-mix(in oklab, var(--ink) 16%, white);
-}
-
-@theme inline {
-  --color-background: var(--bg);
-  --color-foreground: var(--ink);
-  --font-sans: "Inter", "SF Pro Text", "Segoe UI", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", "SFMono-Regular", ui-monospace, monospace;
+  --bg: #fff8f2;
+  --bg-soft: #fff2ea;
+  --peach: #ffae82;
+  --purple: #9d80ff;
+  --ink: #18131f;
+  --muted: #6f627a;
+  --line: color-mix(in oklab, var(--ink) 18%, white);
 }
 
 * {
@@ -28,21 +21,15 @@ body {
 
 body {
   margin: 0;
-  background:
-    radial-gradient(circle at 15% 10%, color-mix(in oklab, var(--peach) 9%, white), transparent 40%),
-    radial-gradient(circle at 95% 2%, color-mix(in oklab, var(--violet) 10%, white), transparent 34%),
-    repeating-linear-gradient(
-      0deg,
-      rgba(17, 16, 21, 0.012) 0,
-      rgba(17, 16, 21, 0.012) 1px,
-      transparent 1px,
-      transparent 4px
-    ),
-    var(--bg);
   color: var(--ink);
-  font-family: var(--font-sans);
+  background:
+    radial-gradient(circle at 8% 2%, color-mix(in oklab, var(--peach) 26%, white), transparent 35%),
+    radial-gradient(circle at 90% 4%, color-mix(in oklab, var(--purple) 20%, white), transparent 32%),
+    linear-gradient(to bottom right, #fffdf9, var(--bg));
+  font-family: "SF Pro Text", "Inter", "Segoe UI", system-ui, sans-serif;
   text-transform: lowercase;
 }
+
 
 .module-card {
   border: 1px solid var(--line);
@@ -60,14 +47,14 @@ body {
 
 .ascii-divider {
   margin-top: 0.45rem;
-  font-family: var(--font-mono);
+  font-family: "JetBrains Mono", "SFMono-Regular", ui-monospace, monospace;
   letter-spacing: 0.05em;
   color: color-mix(in oklab, var(--muted) 84%, white);
   font-size: 0.72rem;
 }
 
 .signal-panel {
-  background: linear-gradient(to bottom, rgba(255, 250, 246, 0.92), rgba(255, 250, 246, 0.86));
+  background: linear-gradient(to bottom, rgba(255, 248, 242, 0.92), rgba(255, 248, 242, 0.86));
   backdrop-filter: blur(10px);
 }
 
@@ -94,22 +81,200 @@ body {
     text-shadow: 0 0 transparent;
   }
   30% {
-    text-shadow: 1px 0 var(--peach), -1px 0 var(--violet);
+    text-shadow: 1px 0 var(--peach), -1px 0 var(--purple);
   }
   60% {
-    text-shadow: -1px 0 var(--peach), 1px 0 var(--violet);
+    text-shadow: -1px 0 var(--peach), 1px 0 var(--purple);
   }
   100% {
     text-shadow: 0 0 transparent;
   }
 }
 
-@media (max-width: 1023px) {
-  .signal-panel {
-    position: relative;
-    height: auto;
-    border-right: 0;
-    border-bottom: 1px solid var(--line);
+.hero-card,
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 1.2rem;
+  background: color-mix(in oklab, var(--bg-soft) 82%, white);
+  box-shadow: 0 8px 36px rgba(91, 52, 140, 0.09);
+  backdrop-filter: blur(5px);
+}
+
+.hero-card {
+  padding: 1.3rem 1.1rem;
+  overflow: hidden;
+}
+
+.panel {
+  padding: 1.1rem;
+}
+
+.rhythm {
+  font-family: "JetBrains Mono", "SFMono-Regular", ui-monospace, monospace;
+  font-size: clamp(0.78rem, 1.4vw, 1rem);
+  line-height: 1.7;
+  letter-spacing: 0.15em;
+  white-space: nowrap;
+}
+
+.glitch-loop {
+  animation: drift 13s linear infinite;
+}
+
+@keyframes drift {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-0.3%); text-shadow: 1px 0 var(--peach), -1px 0 var(--purple); }
+  50% { transform: translateX(0.4%); }
+  80% { transform: translateX(-0.2%); text-shadow: -1px 0 var(--peach), 1px 0 var(--purple); }
+  100% { transform: translateX(0); text-shadow: none; }
+}
+
+.label {
+  font-size: 0.66rem;
+  letter-spacing: 0.26em;
+  color: var(--muted);
+}
+
+.ascii {
+  font-family: "JetBrains Mono", "SFMono-Regular", ui-monospace, monospace;
+  color: color-mix(in oklab, var(--muted) 78%, white);
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+}
+
+.tagline {
+  font-size: 1.12rem;
+  letter-spacing: 0.08em;
+}
+
+.copy {
+  font-size: 0.96rem;
+  line-height: 1.62;
+}
+
+.center {
+  text-align: center;
+}
+
+.moon {
+  font-size: 1.05rem;
+  margin-top: 0.65rem;
+}
+
+.vibe-log,
+.vibe-edit {
+  margin-top: 0.7rem;
+  border: 1px dashed var(--line);
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.66);
+  padding: 0.72rem;
+  width: 100%;
+  min-height: 80px;
+  font-family: "JetBrains Mono", "SFMono-Regular", ui-monospace, monospace;
+  font-size: 0.83rem;
+  line-height: 1.5;
+}
+
+.vibe-edit {
+  resize: vertical;
+  outline: none;
+}
+
+.project-link {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  padding: 0.65rem;
+  transition: transform 180ms ease, border-color 180ms ease;
+}
+
+.project-link span {
+  font-size: 1rem;
+}
+
+.project-link small {
+  color: var(--muted);
+  margin-top: 0.18rem;
+}
+
+.project-link:hover {
+  transform: translateX(7px) translateY(-2px);
+  border-color: color-mix(in oklab, var(--purple) 60%, var(--line));
+  animation: project-glitch 240ms steps(2, jump-none) 1;
+}
+
+@keyframes project-glitch {
+  0% { text-shadow: none; }
+  45% { text-shadow: 1px 0 var(--peach), -1px 0 var(--purple); }
+  100% { text-shadow: none; }
+}
+
+.music-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
+.music-chip,
+.grant-btn {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.42rem 0.78rem;
+  font-size: 0.8rem;
+  background: color-mix(in oklab, white 84%, var(--bg-soft));
+  transition: transform 180ms ease, border-color 180ms ease;
+}
+
+.music-chip:hover,
+.grant-btn:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in oklab, var(--purple) 60%, var(--line));
+}
+
+.grant-btn {
+  margin-top: 0.7rem;
+}
+
+.route-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border-bottom: 1px dashed var(--line);
+  padding: 0.4rem 0;
+  font-size: 0.9rem;
+}
+
+.route-item small,
+.tiny {
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.4;
+}
+
+.modal-wrap {
+  position: fixed;
+  inset: 0;
+  background: rgba(25, 20, 34, 0.35);
+  backdrop-filter: blur(3px);
+  display: grid;
+  place-items: center;
+  z-index: 50;
+  padding: 1rem;
+}
+
+.modal-card {
+  width: min(620px, 100%);
+  border: 1px solid var(--line);
+  border-radius: 1.1rem;
+  background: #fffaf6;
+  padding: 1rem;
+}
+
+@media (max-width: 1000px) {
+  .music-grid {
+    grid-template-columns: 1fr;
   }
 }
 
