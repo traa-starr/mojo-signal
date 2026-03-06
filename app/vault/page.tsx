@@ -1,8 +1,16 @@
+import Link from "next/link";
+
 export default function VaultPage() {
   return (
-    <main className="mx-auto max-w-4xl p-10">
-      <h1 className="text-3xl">/vault</h1>
-      <p className="mt-4">rosin / flower tracker coming soon. this zone stores strain notes, scent memory, and ritual logs.</p>
+    <main className="home-shell">
+      <section className="soft-card">
+        <p className="ascii-line">+== /vault ==+</p>
+        <h1>rosin / flower tracker</h1>
+        <p>placeholder: catalog strains, terpene notes, and ritual outcomes with calm, searchable logs.</p>
+        <Link href="/" className="pill-button">
+          back home
+        </Link>
+      </section>
     </main>
   );
 }

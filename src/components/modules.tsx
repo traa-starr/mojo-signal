@@ -37,7 +37,7 @@ export function Modules({ onSignalHover, reducedMotion }: ModulesProps) {
       >
         <p className="module-label">about</p>
         <div className="ascii-divider">+---- channel introduction ----+</div>
-        <p className="mt-3 max-w-2xl text-lg leading-relaxed text-[color:var(--ink)]">{content.about}</p>
+        <p className="mt-3 max-w-2xl text-lg leading-relaxed text-[color:var(--ink)]">{`${content.about.definition} ${content.about.goals} ${content.about.who}`}</p>
       </motion.article>
 
       <motion.article
@@ -113,20 +113,20 @@ export function Modules({ onSignalHover, reducedMotion }: ModulesProps) {
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.66, ease: "easeOut", delay: 0.14 }}
         className="module-card"
-        onHoverStart={() => onSignalHover("module:links")}
+        onHoverStart={() => onSignalHover("module:socials")}
         onHoverEnd={() => onSignalHover(null)}
       >
-        <p className="module-label">links</p>
+        <p className="module-label">socials</p>
         <div className="ascii-divider">+---- external vectors ----+</div>
         <div className="mt-3 flex flex-wrap gap-3">
-          {content.links.map((link) => (
+          {content.socials.map((link) => (
             <motion.div
               key={link.label}
               whileHover={reducedMotion ? undefined : { scale: 1.06, y: -2, boxShadow: "0 8px 22px rgba(123, 77, 255, 0.14)" }}
               transition={{ type: "spring", stiffness: 300, damping: 22 }}
               className="rounded-full"
               onHoverStart={() => onSignalHover(`link:${link.label}`)}
-              onHoverEnd={() => onSignalHover("module:links")}
+              onHoverEnd={() => onSignalHover("module:socials")}
             >
               <Link
                 href={link.url}

@@ -1,8 +1,16 @@
+import Link from "next/link";
+
 export default function GardenPage() {
   return (
-    <main className="mx-auto max-w-4xl p-10">
-      <h1 className="text-3xl">/garden</h1>
-      <p className="mt-4">idea generator nursery placeholder. seed prompts bloom into build plans here.</p>
+    <main className="home-shell">
+      <section className="soft-card">
+        <p className="ascii-line">+== /garden ==+</p>
+        <h1>idea generator nursery</h1>
+        <p>placeholder: grow prompts into launch-ready concepts with playful, modular constraints.</p>
+        <Link href="/" className="pill-button">
+          back home
+        </Link>
+      </section>
     </main>
   );
 }
