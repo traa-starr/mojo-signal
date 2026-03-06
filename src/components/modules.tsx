@@ -37,7 +37,7 @@ export function Modules({ onSignalHover, reducedMotion }: ModulesProps) {
       >
         <p className="module-label">about</p>
         <div className="ascii-divider">+---- channel introduction ----+</div>
-        <p className="mt-3 max-w-2xl text-lg leading-relaxed text-[color:var(--ink)]">{`${content.about.definition} ${content.about.goals} ${content.about.who}`}</p>
+        <p className="mt-3 max-w-2xl text-lg leading-relaxed text-[color:var(--ink)]">{content.about}</p>
       </motion.article>
 
       <motion.article

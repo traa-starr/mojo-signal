@@ -4,7 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: content.title,
-  description: content.about.definition,
+  description: content.about,
 };
 
 export default function RootLayout({

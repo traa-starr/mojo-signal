@@ -54,6 +54,13 @@ function rhythmHeader() {
     .join("   ");
 }
 
+function labelFromTrackUrl(url: string) {
+  const clean = url.trim().replace(/\/$/, "");
+  const parts = clean.split("/").filter(Boolean);
+  const slug = parts[parts.length - 1] ?? "track";
+  return slug.replace(/[-_]+/g, " ").trim();
+}
+
 function signalModeFromKey(key: string | null): SignalMode {
   if (!key) return "idle";
   if (key.includes("music")) return "music";
@@ -162,7 +169,7 @@ export function HomePage() {
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
   const [idleIndex, setIdleIndex] = useState(0);
   const [signalText, setSignalText] = useState<string>(IDLE_SIGNALS[0]);
-  const [activeTrack, setActiveTrack] = useState<{ title: string; url: string } | null>(null);
+  const [activeTrack, setActiveTrack] = useState<{ url: string } | null>(null);
 
   const sectionKeys = useMemo(
     () => ["module:about", "module:current", "module:projects", "module:music", "module:links", "donate"],
@@ -268,9 +275,7 @@ export function HomePage() {
         <section id="section-about" data-signal-key="module:about" className="grid-panel reveal-on-scroll" onMouseEnter={() => setHoveredKey("module:about")} onMouseLeave={() => setHoveredKey(null)}>
           <article className="soft-card center-copy">
             <p className="ascii-line">+== about ==+</p>
-            <p>{content.about.definition}</p>
-            <p>{content.about.goals}</p>
-            <p>{content.about.who}</p>
+            <p>{content.about}</p>
           </article>
 
           <article id="section-current" data-signal-key="module:current" className="soft-card" onMouseEnter={() => setHoveredKey("module:current")} onMouseLeave={() => setHoveredKey(null)}>
@@ -300,7 +305,7 @@ export function HomePage() {
           <div className="music-grid">
             {content.music.map((track) => (
               <button key={track.url} type="button" className="music-pill" onClick={() => setActiveTrack(track)}>
-                play: {track.title}
+                play: {labelFromTrackUrl(track.url)}
               </button>
             ))}
           </div>
@@ -336,11 +341,11 @@ export function HomePage() {
         {activeTrack ? (
           <motion.div className="player-dock" initial={{ y: 120, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 120, opacity: 0 }}>
             <div className="player-header">
-              <p>now playing: {activeTrack.title}</p>
+              <p>now playing: {labelFromTrackUrl(activeTrack.url)}</p>
               <button className="pill-button" type="button" onClick={() => setActiveTrack(null)}>close</button>
             </div>
             <iframe
-              title={activeTrack.title}
+              title={`soundcloud: ${labelFromTrackUrl(activeTrack.url)}`}
               src={`https://w.soundcloud.com/player/?url=${encodeURIComponent(activeTrack.url)}`}
               allow="autoplay"
               loading="lazy"
