@@ -11,6 +11,7 @@ import { SignalField } from "./signal-field";
 import { EmbedCard } from "./embed-card";
 
 type SignalMode = "idle" | "music" | "project";
+type ActiveZone = "arrival" | "evidence" | "archive" | "connect";
 
 const IDLE_SIGNALS = [
   "signal open / milk & honey",
@@ -41,6 +42,13 @@ function signalModeFromKey(key: string | null): SignalMode {
   return "idle";
 }
 
+function zoneFromKey(key: string | null): ActiveZone {
+  if (!key || key === "act:i") return "arrival";
+  if (key.includes("music")) return "archive";
+  if (key.includes("links") || key.includes("donate")) return "connect";
+  return "evidence";
+}
+
 export function HomePage() {
   const reducedMotion = usePrefersReducedMotion();
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
@@ -49,6 +57,7 @@ export function HomePage() {
   const activeKey = useActiveSection(sectionKeys);
   const effectiveKey = hoveredKey ?? activeKey;
   const signalMode = signalModeFromKey(effectiveKey);
+  const activeZone = zoneFromKey(effectiveKey);
   useSignalField(reducedMotion, signalMode);
 
   useEffect(() => {
@@ -63,7 +72,7 @@ export function HomePage() {
   const projectSupport = content.projects[1];
 
   return (
-    <div className="page-frame" data-signal-mode={signalMode}>
+    <div className="page-frame" data-signal-mode={signalMode} data-active-zone={activeZone}>
       <SignalField mode={signalMode} />
 
       <aside className="signal-dock" aria-live="polite">
