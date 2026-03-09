@@ -5,9 +5,9 @@ import { useEffect } from "react";
 type SignalMode = "idle" | "music" | "project";
 
 const intensityByMode: Record<SignalMode, string> = {
-  idle: "0.22",
-  music: "0.34",
-  project: "0.36",
+  idle: "0.4",
+  music: "0.56",
+  project: "0.6",
 };
 
 export function useSignalField(reducedMotion: boolean, mode: SignalMode) {
