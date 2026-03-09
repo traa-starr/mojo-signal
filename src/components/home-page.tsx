@@ -79,43 +79,45 @@ export function HomePage() {
           onMouseEnter={() => setHoveredKey("act:i")}
           onMouseLeave={() => setHoveredKey(null)}
         >
-          <motion.p
-            className="arrival-kicker"
-            initial={reducedMotion ? false : { opacity: 0, y: 12 }}
-            animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-          >
-            curated signal environment
-          </motion.p>
-          <motion.h1
-            className="arrival-title"
-            initial={reducedMotion ? false : { opacity: 0, y: 20 }}
-            animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.08, ease: "easeOut" }}
-          >
-            {content.title}
-          </motion.h1>
-          <motion.p
-            className="arrival-line"
-            initial={reducedMotion ? false : { opacity: 0, y: 14 }}
-            animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.14, ease: "easeOut" }}
-          >
-            {content.tagline} / living transmission
-          </motion.p>
-          <motion.div
-            className="arrival-actions"
-            initial={reducedMotion ? false : { opacity: 0, y: 18 }}
-            animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-          >
-            <Link href={content.projects[0].url} target="_blank" rel="noreferrer" className="vector-link">
-              enter proof
-            </Link>
-            <Link href="#section-music" className="vector-link muted">
-              open archive
-            </Link>
-          </motion.div>
+          <div className="arrival-stack">
+            <motion.p
+              className="arrival-kicker"
+              initial={reducedMotion ? false : { opacity: 0, y: 12 }}
+              animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: "easeOut" }}
+            >
+              curated signal environment
+            </motion.p>
+            <motion.h1
+              className="arrival-title"
+              initial={reducedMotion ? false : { opacity: 0, y: 20 }}
+              animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.08, ease: "easeOut" }}
+            >
+              {content.title}
+            </motion.h1>
+            <motion.p
+              className="arrival-line"
+              initial={reducedMotion ? false : { opacity: 0, y: 14 }}
+              animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.14, ease: "easeOut" }}
+            >
+              {content.tagline} / living transmission
+            </motion.p>
+            <motion.div
+              className="arrival-actions"
+              initial={reducedMotion ? false : { opacity: 0, y: 18 }}
+              animate={reducedMotion ? undefined : { opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+            >
+              <Link href={content.projects[0].url} target="_blank" rel="noreferrer" className="vector-link">
+                enter proof
+              </Link>
+              <Link href="#section-music" className="vector-link muted">
+                open archive
+              </Link>
+            </motion.div>
+          </div>
         </section>
 
         <section className="evidence-act">
@@ -167,8 +169,8 @@ export function HomePage() {
             <h2>sound archive</h2>
           </div>
           <div className="archive-grid">
-            {content.music.map((track) => (
-              <div key={track.url} className="archive-item">
+            {content.music.map((track, index) => (
+              <div key={track.url} className={`archive-item ${index % 3 === 0 ? "archive-item-wide" : ""}`}>
                 <p className="track-name">{labelFromTrackUrl(track.url)}</p>
                 <EmbedCard url={track.url} />
               </div>
@@ -183,14 +185,17 @@ export function HomePage() {
           onMouseEnter={() => setHoveredKey("module:links")}
           onMouseLeave={() => setHoveredKey(null)}
         >
-          <div className="links-grid">
-            {content.socials
-              .filter((item) => item.label !== "paypal")
-              .map((social) => (
-                <Link key={social.label} href={social.url} target="_blank" rel="noreferrer" className="exit-link">
-                  {social.label}
-                </Link>
-              ))}
+          <div className="connect-rail">
+            <p className="module-label">exit vectors</p>
+            <div className="links-grid">
+              {content.socials
+                .filter((item) => item.label !== "paypal")
+                .map((social) => (
+                  <Link key={social.label} href={social.url} target="_blank" rel="noreferrer" className="exit-link">
+                    {social.label}
+                  </Link>
+                ))}
+            </div>
           </div>
           <div
             id="section-donate"
