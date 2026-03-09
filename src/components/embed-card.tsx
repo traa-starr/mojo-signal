@@ -45,19 +45,19 @@ export function EmbedCard({ title, trackUrl, url }: EmbedCardProps) {
   }, [sourceUrl]);
 
   return (
-    <article className="module-card relative overflow-hidden">
-      <header className="mb-4 flex items-center justify-between gap-3">
+    <article className="module-card embed-card relative overflow-hidden">
+      <header className="mb-3 flex items-center justify-between gap-3">
         {title ? <h3 className="text-sm text-[color:var(--ink)]">{title}</h3> : <div />}
-        <span className="text-xs tracking-[0.16em] text-[color:var(--muted)]">soundcloud</span>
+        <span className="text-xs tracking-[0.18em] text-[color:var(--muted)]">soundcloud</span>
       </header>
       <div className="relative">
         {!loaded && !errored ? (
-          <div className="embed-skeleton absolute inset-0 flex items-center justify-center rounded-lg border border-[color:var(--line)] bg-[color:var(--bg-soft)] text-xs text-[color:var(--muted)]">
+          <div className="embed-skeleton absolute inset-0 flex items-center justify-center border border-[color:var(--line)] bg-[color:var(--bg-soft)] text-xs text-[color:var(--muted)]">
             loading signal stream...
           </div>
         ) : null}
         {errored ? (
-          <div className="rounded-lg border border-[color:var(--line)] bg-[color:var(--bg-soft)] px-4 py-10 text-sm text-[color:var(--muted)]">
+          <div className="border border-[color:var(--line)] bg-[color:var(--bg-soft)] px-4 py-10 text-sm text-[color:var(--muted)]">
             unable to load audio embed. open track directly:
             <a
               href={sourceUrl}
@@ -74,9 +74,7 @@ export function EmbedCard({ title, trackUrl, url }: EmbedCardProps) {
             src={src}
             allow="autoplay"
             loading="lazy"
-            className={`h-[166px] w-full rounded-lg border border-[color:var(--line)] transition-opacity duration-500 ${
-              loaded ? "opacity-100" : "opacity-0"
-            }`}
+            className={`h-[166px] w-full border border-[color:var(--line)] transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"}`}
             onLoad={() => setLoaded(true)}
             onError={() => setErrored(true)}
           />
