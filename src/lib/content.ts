@@ -1,27 +1,19 @@
 export const content = {
-  title: "mojo signal // milk & honey frequency",
+  title: "mojo.signal",
   about:
-    "definition: mojo signal is a soft-tech transmission lab for permissioned collaboration, ritual software, and internet-native art systems. goals: prototype humane creative infrastructure that feels alive, playful, and deeply useful. who i am: trajaun is a systems builder + sonic artist designing where cryptography, vibe coding, and culture tools overlap.",
-  repeatedHeader: "m o j o ( t r a j a u n )",
-  tagline: "milk & honey frequency",
+    "mojo signal is a permissioned collaboration studio where cryptography, generative ai, and music rituals converge into living software. build humane, playful, chain-aware tools that feel like art objects while solving real workflow friction for creators. i'm trajaun: systems engineer + artist, building interfaces that oscillate between notebook clarity and transcendent internet-native weirdness.",
+  repeatedHeader: "m o j o",
+  tagline: "milk & honey",
   projects: [
     {
-      name: "permchainoauth",
-      displayName: "permchainoauth",
+      name: "PermChain OAuth",
       url: "https://github.com/traa-starr/newperms",
-      note: "wallet-native oauth delegation + receipt graph for collab access",
+      note: "wallet-native oauth delegation + collab receipts minted on-chain",
     },
     {
-      name: "living library",
-      displayName: "living library",
+      name: "Living Library",
       url: "https://github.com/traa-starr/live-lib",
-      note: "readable premium archive + knowledge flow ui for modern rituals",
-    },
-    {
-      name: "mojo signal",
-      displayName: "mojo signal",
-      url: "https://github.com/traa-starr/mojo-signal",
-      note: "transcendent artist homepage with moon-state intelligence and rhythm motifs",
+      note: "premium dark living content library ui + content pipeline",
     },
   ],
   music: [
@@ -31,29 +23,18 @@ export const content = {
     { url: "https://soundcloud.com/submergedarchives/jazz-primus-x-traa-o-2025-prod" },
     { url: "https://soundcloud.com/mojogotmilk/sets/vamp-life" },
   ],
-  links: [
+  socials: [
     { label: "github", url: "https://github.com/traa-starr" },
     { label: "soundcloud", url: "https://soundcloud.com/mojogotmilk" },
     { label: "instagram", url: "https://www.instagram.com/mojogotmilk" },
     { label: "twitch", url: "https://www.twitch.tv/mojogotmilk" },
+    { label: "paypal", url: "https://paypal.me/traa333" },
   ],
-  donate: { label: "donate", url: "https://paypal.me/traa333" },
-  futureRoutes: [
-    { href: "/vault", label: "/vault", note: "rosin / flower tracker placeholder" },
-    { href: "/oracle", label: "/oracle", note: "bpm + key finder lab" },
-    { href: "/mixer", label: "/mixer", note: "vst gadget launchpad" },
-    { href: "/garden", label: "/garden", note: "idea generator nursery" },
-  ],
-  grantPerm: {
-    chainId: 8453,
-    chainName: "base",
-    contractAddress: "0x0000000000000000000000000000000000000000",
-    functionName: "mintCollabAccess",
+  futureRoutes: ["/vault", "/oracle", "/mixer", "/garden"],
+  donate: {
+    label: "fuel the signal",
+    url: "https://paypal.me/traa333",
   },
-  aiPrompts: {
-    moonVisual:
-      "transcendent moon glyph artwork in pastel orange and purple, soft glitch aura, minimal linework, lowercase internet-native tone",
-    vibeSummary:
-      "summarize current vibe in one punchy lowercase sentence, include the words transcendent and pinnacle of human tech in 2026",
-  },
-} as const;
+};
+
+export type MojoContent = typeof content;
